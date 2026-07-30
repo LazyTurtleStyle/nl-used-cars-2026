@@ -80,6 +80,7 @@ replaces these patterns with placeholders:
 | `[URL]` | 188 | Websites and domains |
 | `[EMAIL]` | 105 | Email addresses |
 | `[ADDRESS]` | 105 | Street names with house numbers |
+| `[REFERENCE]` | 77 | Dealer stock codes (`referentienummer: …`) — not personal data, but a direct lookup key into a dealer's inventory |
 | `[NAME]` | 21 | Seller names behind a sign-off (`mvg …`, `groetjes …`, `mijn naam is …`) |
 | `[NUMBER]` | 4 | Remaining digit runs too long to be a price, year or mileage |
 

@@ -78,7 +78,8 @@ RULES = [
 ]
 
 _stats = {name: 0 for name in
-          ["EMAIL", "URL", "VIN", "PHONE", "PLATE", "POSTCODE", "ADDRESS", "NUMBER", "NAME"]}
+          ["EMAIL", "URL", "VIN", "PHONE", "PLATE", "POSTCODE", "ADDRESS", "NUMBER",
+           "NAME", "REFERENCE"]}
 
 # A Dutch licence plate is three dash-separated groups totalling six
 # alphanumerics, mixing letters and digits: hf-969-j, 70-gtg-4, hfz-65-j,
@@ -86,6 +87,13 @@ _stats = {name: 0 for name in
 # so the shape is validated in code rather than pinned in the pattern.
 PLATE = re.compile(r"\b([a-z0-9]{1,3})-([a-z0-9]{1,3})-([a-z0-9]{1,3})\b", re.I)
 KENTEKEN_FIELD = re.compile(r"kenteken\s*:\s*[a-z0-9]*(?:-[a-z0-9]*)*", re.I)
+
+# Dealer stock codes ("referentienummer: 2717177"). Not personal data, but they
+# are a direct lookup key into a dealer's inventory, so they make a row easier
+# to trace back to its advert. Too short for the 8+ digit catch-all rule -- the
+# observed values run from 2 to 7 digits -- so match on the label instead.
+REFERENCE_FIELD = re.compile(
+    r"\b(referentie|productie|voorraad|object|advertentie)nummer\s*:?\s*[a-z0-9][a-z0-9\-/]*", re.I)
 
 # Spaced postcodes ("1531 na") collide with "uit 2009 te koop": a build year
 # followed by a short Dutch word. Redact such a pair only when the number is
@@ -177,6 +185,9 @@ def scrub(text):
     # ("kenteken: 05-jfn-") and leave a fragment the shape check would miss.
     text, n = KENTEKEN_FIELD.subn("kenteken: [PLATE]", text)
     _stats["PLATE"] += n
+
+    text, n = REFERENCE_FIELD.subn(lambda m: f"{m.group(1).lower()}nummer: [REFERENCE]", text)
+    _stats["REFERENCE"] += n
 
     text = SIGNOFF.sub(_signoff, text)
     text = PLATE.sub(_plate, text)
