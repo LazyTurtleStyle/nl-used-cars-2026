@@ -1,0 +1,8 @@
+# The pseudonymisation salt must never be committed -- publishing it would
+# make listing_uid reversible against enumerated source listing ids.
+.scrub_salt
+*.salt
+
+__pycache__/
+*.pyc
+.DS_Store
